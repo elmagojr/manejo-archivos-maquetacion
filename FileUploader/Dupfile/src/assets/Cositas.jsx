@@ -1,4 +1,5 @@
 const Tipos_Documentos = [
+    
     {codigo:1, descripcion: 'Identificaciones'},
     {codigo:2, descripcion: 'RTN'},
     {codigo:3, descripcion: 'Contratos'},

@@ -1,18 +1,23 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
+
 import Container from 'react-bootstrap/Container';
 import './App.css'
 import { ModalDataAfiliados } from './ModalDataAfiliados';
 import { SubirArchivo } from './SubirArchivo';
-
+import { ApiGet } from './Manejo_data';
+import {TabladataArchivos} from './TabladataArchivos';
 import { InputBuscar } from './InputBuscar';
 import Tipos_Documentos from './assets/cositas';
 import { ListadoCombo } from './ListadoCombo';
+import { AcordionArchivos } from './AcordionArchivos';
+
 function App() {
 const [count, setCount] = useState(0)
 const [Codigo, setCodigo] = useState("");
 const [archivo, setArchivo] = useState(null);
 const [identidadAfiliado, setIdentidadAfiliado] = useState("");
 const [nombreAfiliado, setNombreAfiliado] = useState("");
+const [dataAcordion, setDataAcordion] = useState([]);
 const [data, setData] = useState([]);
 const [tipoDoc, setTipoDoc] = useState("0");  // estado local
 const fileInputRef = useRef(null);
@@ -35,6 +40,10 @@ const handleResultados = (data) => {
     setIdentidadAfiliado(data.length > 0 ? data[0].COOP_IDENTIDAD : "");
     setNombreAfiliado(data.length > 0 ? data[0].COOP_NOMBRE : "");
 
+  
+
+
+    
     console.log("dni "+identidadAfiliado);
     console.log("nombre "+nombreAfiliado);
 
@@ -75,13 +84,22 @@ const handleResultados = (data) => {
         document.getElementById('coop_ec').textContent = data[0].COOP_ESTADO_CIVIL;
         document.getElementById('coop_Telefono').value = data[0].COOP_TEL2;
         document.getElementById('coop_email').value = data[0].COOP_CORREO_ELEC;
+    
 
-
+     
+        const urlAcordion = `${APIURL}api/lista_archivos/${data[0].COOP_IDENTIDAD}`;
+        ApiGet(urlAcordion).then((json) =>{setDataAcordion(json); console.log("Data acordion: ", json);
+        }).catch(err => console.log(err));      
+    
+        
         
     }
   };
   
+  //validad el hook para obtenr la data de los archivos del  acordion
 
+
+  console.log("Data acordion fuera del useEffect: ", dataAcordion);
 
   return (
     <>
@@ -163,7 +181,14 @@ const handleResultados = (data) => {
         <span className="ri-file-list-2-fill"></span>Enlistar Archivos</button>
     </div>
 
+    {dataAcordion.map((item, index) => (      
+        <AcordionArchivos key={index} titular={ Tipos_Documentos.find(tipos => tipos.codigo.toString() === item.subcarpeta)?.descripcion || "N/A" } >
+          <TabladataArchivos listadoArchivos={item.DirArchivo} url={APIURL} identidad={identidadAfiliado} tipo={item.subcarpeta} />
+        </AcordionArchivos>
+    ))}
 
+
+    
       </Container>
 
 

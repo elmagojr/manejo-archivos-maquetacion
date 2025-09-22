@@ -69,7 +69,7 @@ var APIURL = import.meta.env.VITE_MODE == "dev" ? import.meta.env.VITE_API_URL_D
                             <td>{item.coop_rtn}</td>
                             <td>{item.coop_codigo_ant}</td>
                             <td>
-                                <InputBuscar url={APIURL + "api/coop?id="} funcionBuscar={(data) => {console.log(data); cerrarModal(); onSelect(data);}} Codigo={item.coop_codigo.toString()}  />
+                                <InputBuscar url={APIURL + "api/coop?id="} funcionBuscar={(data) => { cerrarModal(); onSelect(data);}} Codigo={item.coop_codigo.toString()}  />
                             </td>
                         </tr>
                     ))} 

@@ -29,5 +29,12 @@ export function Manejo_data(api) {
 
 }
 
+export async function ApiGet(url) {
+  const respuesta = await fetch(url);
+  if (!respuesta.ok) {
+    throw new Error(`Error HTTP: ${respuesta.status}`);
+  }
+  return await respuesta.json();
+}
 
 
