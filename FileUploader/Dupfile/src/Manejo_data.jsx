@@ -29,6 +29,8 @@ export function Manejo_data(api) {
 
 }
 
+ 
+
 export async function ApiGet(url) {
   const respuesta = await fetch(url);
   if (!respuesta.ok) {

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Loading } from "./loading";
+import { InputBuscar } from "./InputBuscar";
 
 export function SubirArchivo({ url, archivo, tipoDoc, identidad, nombreAfiliado, onSuccess }) {
     const [loading, setLoading] = useState(false);
+    
 
 
     const handleUpload = async () => {
@@ -47,6 +49,7 @@ export function SubirArchivo({ url, archivo, tipoDoc, identidad, nombreAfiliado,
                 } else {
                     alert(">" + data_SUBIDA.mensaje);
                     if (onSuccess) onSuccess();
+                   
                 }
             }
 

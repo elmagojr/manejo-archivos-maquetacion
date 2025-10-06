@@ -18,6 +18,7 @@ const [archivo, setArchivo] = useState(null);
 const [identidadAfiliado, setIdentidadAfiliado] = useState("");
 const [nombreAfiliado, setNombreAfiliado] = useState("");
 const [dataAcordion, setDataAcordion] = useState([]);
+//const [DataAcordion2, setListadoArchivos] = useState(listadoArchivos || []);
 const [data, setData] = useState([]);
 const [tipoDoc, setTipoDoc] = useState("0");  // estado local
 const fileInputRef = useRef(null);
@@ -30,6 +31,13 @@ const handleSuccess = () => {
     if (fileInputRef.current) {
         fileInputRef.current.value = "";
     }
+
+        const urlAcordion = `${APIURL}api/lista_archivos/${identidadAfiliado}`;
+        setDataAcordion([])
+        ApiGet(urlAcordion).then((json) =>{setDataAcordion(json);
+        }).catch(err => console.log(err));
+        console.log("Data acordion on success: ", dataAcordion, "url "+urlAcordion);
+        
   }
 
 
@@ -43,6 +51,7 @@ const handleResultados = (data) => {
   
 
 
+    console.log("Logitud de datos: ", data.length);
     
     console.log("dni "+identidadAfiliado);
     console.log("nombre "+nombreAfiliado);
@@ -88,18 +97,19 @@ const handleResultados = (data) => {
 
      
         const urlAcordion = `${APIURL}api/lista_archivos/${data[0].COOP_IDENTIDAD}`;
-        ApiGet(urlAcordion).then((json) =>{setDataAcordion(json); console.log("Data acordion: ", json);
-        }).catch(err => console.log(err));      
-    
-        
-        
+        setDataAcordion([])
+        ApiGet(urlAcordion).then((json) =>{setDataAcordion(json);
+        }).catch(err => console.log(err));
+        console.log("Data acordion: ", dataAcordion, "url "+urlAcordion);
+
+
     }
   };
   
   //validad el hook para obtenr la data de los archivos del  acordion
 
 
-  console.log("Data acordion fuera del useEffect: ", dataAcordion);
+  //console.log("Data acordion fuera del useEffect: ", dataAcordion);
 
   return (
     <>
@@ -197,3 +207,4 @@ const handleResultados = (data) => {
 }
 
 export default App
+ 
