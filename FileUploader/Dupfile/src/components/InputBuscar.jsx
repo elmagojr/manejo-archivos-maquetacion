@@ -1,6 +1,6 @@
-import { Manejo_data } from "./Manejo_data"
+import { Manejo_data } from "../Manejo_data"
 import { useState } from "react";
-import { Loading } from "./loading";
+import { Loading } from "./Loading";
 
 export function InputBuscar({ url, funcionBuscar, Codigo }) {
 

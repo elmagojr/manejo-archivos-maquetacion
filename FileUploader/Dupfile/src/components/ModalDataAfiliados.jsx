@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import {Button, Modal} from "react-bootstrap";
 import { Tabladata } from './Tabladata';
-import { Manejo_data } from './Manejo_data';
-import { Loading } from './loading';
+import { Manejo_data } from '../Manejo_data';
+ 
 
 export function ModalDataAfiliados({SizeVentana,textBoton,tituloModal,btnCerrar,btnOk,colorClase, children, API_URL, onSelect  }) {
     const [show, setShow] = useState(false);

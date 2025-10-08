@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loading } from "./loading";
+import { Loading } from "./Loading";
 import { InputBuscar } from "./InputBuscar";
 
 export function SubirArchivo({ url, archivo, tipoDoc, identidad, nombreAfiliado, onSuccess }) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table } from "react-bootstrap";
-import { Loading } from './loading';
+import { Loading } from './Loading';
 import { InputBuscar } from "./InputBuscar";
 
  
