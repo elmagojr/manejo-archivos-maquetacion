@@ -14,3 +14,19 @@ export function ListadoCombo({ data, value, onChange }) {
 
     );
 }
+
+export function ListadoGenerico({ data, value, onChange, identificadores, valorDefault, mensajeDefault,keyValue, textValueSelect }) {
+    return (
+        <>
+            <select id={identificadores} name={identificadores} className="form-select" aria-label="Default select example" value={value} onChange={onChange}>
+                <option defaultValue={valorDefault}>{mensajeDefault}</option>
+                  {data.map(item => (
+                    <option key={item[keyValue]} value={item[keyValue]}>{item[textValueSelect]}</option>
+                ))}
+            </select>
+       
+
+        </>
+
+    );
+}

@@ -25,7 +25,7 @@ function App() {
 
 
         <Route path='/login' element={<Login />}></Route>
-        <Route path='/register' element={<Register />}></Route>
+        <Route path='/register' element={<GuardRute><Register /></GuardRute>}></Route>
 
       </Routes>
     </>
