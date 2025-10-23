@@ -2,7 +2,7 @@ import './App.css'
 import { Login } from './pages/Login';
 import { Link, BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Principal } from './pages/principal';
-import { Register } from './pages/Register';
+import { Acceso } from './pages/Acceso';
 import { GuardRute } from './guards/VerificaRutas';
 
 
@@ -25,7 +25,7 @@ function App() {
 
 
         <Route path='/login' element={<Login />}></Route>
-        <Route path='/register' element={<GuardRute><Register /></GuardRute>}></Route>
+        <Route path='/acceso' element={<GuardRute><Acceso /></GuardRute>}></Route>
 
       </Routes>
     </>

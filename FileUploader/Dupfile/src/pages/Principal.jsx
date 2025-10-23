@@ -7,7 +7,7 @@ import { SubirArchivo } from '../components/SubirArchivo';
 import { ApiGet } from '../Manejo_data';
 import { TabladataArchivos } from '../components/TabladataArchivos';
 import { InputBuscar } from '../components/InputBuscar';
-import Tipos_Documentos from '../assets/cositas';
+import {Tipos_Documentos} from '../assets/cositas';
 import { ListadoCombo } from '../components/ListadoCombo';
 import { AcordionArchivos } from '../components/AcordionArchivos';
 import { Navbarapp2 } from '../components/Navbarapp2.jsx';
@@ -192,7 +192,7 @@ export function Principal() {
                 </div>
                 <div className='clase-desplazar-vertical py-1'>
                     {dataAcordion.map((item, index) => (
-                        <AcordionArchivos key={index} titular={Tipos_Documentos.find(tipos => tipos.codigo.toString() === item.subcarpeta)?.descripcion || "N/A"} >
+                        <AcordionArchivos key={index} coteoArchivos={item.DirArchivo.length} titular={Tipos_Documentos.find(tipos => tipos.codigo.toString() === item.subcarpeta)?.descripcion || "N/A"} >
                             <TabladataArchivos listadoArchivos={item.DirArchivo} url={APIURL} identidad={identidadAfiliado} tipo={item.subcarpeta} />
                         </AcordionArchivos>
                     ))}

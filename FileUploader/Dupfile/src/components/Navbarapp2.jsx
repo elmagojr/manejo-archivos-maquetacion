@@ -22,8 +22,8 @@ const menuOptions = [{
   url: "/"
 },
 {
-  titulo: "Seguridad",
-  url: "/"
+  titulo: "Accesos",
+  url: "/acceso"
 },
 
 ]

@@ -3,7 +3,13 @@ import { ListadoGenerico } from "../components/ListadoCombo"
 import { ApiGet } from "../Manejo_data";
 import { jwtDecode } from "jwt-decode";
 import { AlertaHtml } from "../components/AlertasHtml";
-export function Register() {
+import { Navbarapp2 } from "../components/Navbarapp2.jsx";
+import { TabsMenu } from "../components/TabsMenu.jsx";
+import { PermisosBase } from "../assets/cositas.jsx";
+import { Container, Row, Col, Form } from "react-bootstrap";
+import { ModalGenerico } from "../components/ModalGenerico.jsx";
+
+export function Acceso() {
 
   const RolesMomentaneos = [{ "idRol": 1, "nombreRol": "Rol1" }, { "idRol": 2, "nombreRol": "Rol2" }]
   const [loading, setLoading] = useState(false);
@@ -15,7 +21,7 @@ export function Register() {
   const [password, setPassword] = useState("");
   const [dataUsrs, setDatasur] = useState([]);
   const token = localStorage.getItem("token"); //token del adminstrador o persona autorizada
-  
+
   const api = import.meta.env.VITE_MODE == "dev" ? import.meta.env.VITE_API_URL_DEV : import.meta.env.VITE_API_URL_PROD
   function BuscarUsuario(id) {
     const codigo = dataUsrs.find(item => item.idKey === Number(id))
@@ -42,7 +48,7 @@ export function Register() {
     });
 
   }, [])
-  function Alerta(color, mensaje,ver) { //des ser necesario
+  function Alerta(color, mensaje, ver) { //des ser necesario
     setColor(color.toString());
     setmensajeA(mensaje);
     setvermensaje(ver)
@@ -51,48 +57,55 @@ export function Register() {
     setLoading(false);
     setTipoRol(0);
     setKeyusr(0);
-    setPassword("");    
+    setPassword("");
+    document.getElementById("rpassword2").value = "";
   }
+
 
   const RegistroUsr = async () => {
     setLoading(true);
     try {
 
-  // 🚨 VALIDACIÓN DE CAMPOS OBLIGATORIOS
-    if (tipoRol === 0) {
-      Alerta("warning", "Debe seleccionar un rol.", true);
-      setLoading(false);
-      return;
-    }
+      // validaciones
+      if (tipoRol === 0) {
+        Alerta("warning", "Debe seleccionar un rol.", true);
+        //console.log("error rol: " + tipoRol);      
+        setLoading(false);
+        return;
+      }
 
-    if (idKeyusr === 0) {
-      Alerta("warning", "Debe seleccionar un usuario.", true);
-      setLoading(false);
-      return;
-    }
+      if (idKeyusr === 0) {
+        Alerta("warning", "Debe seleccionar un usuario.", true);
+        //console.log("error usr: " + idKeyusr);
+        setLoading(false);
+        return;
+      }
 
-    if (!password || password.trim() === "") {
-      Alerta("warning", "Debe ingresar una contraseña.", true);
-      setLoading(false);
-      return;
-    }
+      if (!password || password.trim() === "" || password.length < 6) {
+        Alerta("warning", "Debe ingresar una contraseña válida (mínimo 6 caracteres).", true);
+        //console.log("error pass: " + password);
+        setLoading(false);
+        return;
+      }
 
-    // 🚨 OPCIONAL: Validar confirmación de contraseña
-    const pass2 = document.getElementById("rpassword2").value;
-    if (password !== pass2) {
-      Alerta("danger", "Las contraseñas no coinciden.", true);
-      setLoading(false);
-      return;
-    }
-console.log("Rol: ",tipoRol);
 
-    return;
+      const pass2 = document.getElementById("rpassword2").value;
+      if (password !== pass2) {
+        Alerta("danger", "Las contraseñas no coinciden.", true);
+        //console.log("error pass no coinciden");
+        setLoading(false);
+        return;
+      }
+
+
+
+      //return;
       const payload = {
         id_rol: Number(tipoRol),
         username: BuscarUsuario(Number(idKeyusr)).toString(),
         password: password
       }
-console.log(payload);
+      //console.log(payload);
 
       if (token) {
         const decoded = jwtDecode(token);
@@ -103,7 +116,7 @@ console.log(payload);
         }
         console.log(" " + permisos.crear_usuario); // true o false
       }
-       
+
 
       const res = await fetch(`${api}api/auth/registro`, {
         method: "POST",
@@ -112,12 +125,12 @@ console.log(payload);
       });
       const data = await res.json();
       console.log("esto es una preuba", data);
-      if (data.estado === 1)  {
+      if (data.estado === 1) {
         alert("Usuario " + data.user + " creado Exitosamente");
         Alerta("", "", false)
-        ResetFormulario(); 
+        ResetFormulario();
       }
-     
+
       if (!res.ok) throw new Error(data.message || "Error de registro");
 
     } catch (error) {
@@ -130,9 +143,8 @@ console.log(payload);
 
   }
 
-
-  return (
-    <>
+  const paginaRegistro = () => {
+    return (
       <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
         <div className="card shadow p-4" >
           <h5 className="text-center mb-4">Sistema de Gestion de Archivos Digitales</h5>
@@ -148,7 +160,7 @@ console.log(payload);
 
             <div className="mb-3">
               <label htmlFor="password" className="form-label">Contraseña</label>
-              <input              
+              <input
                 type="password"
                 id="password1"
                 name="pass1"
@@ -174,6 +186,92 @@ console.log(payload);
           </form>
         </div>
       </div>
+    )
+  }
+
+  const paginaroles = () => {
+    const [showModal, setShowModal] = useState(false);
+    const [nombreRol, setNombreRol] = useState("");
+    const [permisosSeleccionados, setPermisosSeleccionados] = useState(PermisosBase);
+    const htmlBody = () => {
+      return (
+      <form> 
+      <Row className="justify-content-center  vh-100 bg-light ">
+        <Col md={6}>
+          <div className="card text-start">
+            <div className="card-body">
+              <h4 className="card-title">Registro de roles</h4>              
+                <div className="">
+                  <label htmlFor="nombreRol" className="form-label">Nombre del Rol</label>
+                  <input
+                    onChange={(e) => setNombreRol(e.target.value)}
+                    type="text"
+                    value={nombreRol}
+                    id="nombreRol"
+                    className="form-control"
+                    placeholder="Ingresa el nombre del rol"
+                    required
+                  />
+                </div>
+              
+            </div>
+          </div>
+        </Col>
+        <Col md={6}>
+          <div className="card text-start">
+            <div className="card-body">
+              <h4 className="card-title">Permisos Disponibles</h4>
+              <div>
+                {Object.entries(PermisosBase).map(([grupoKey, grupoArray]) => (
+                  <div key={grupoKey} className="mb-3">
+                    <h5>{grupoArray[0].subgrupo}</h5>
+                    {grupoArray[0].permisos.map((permiso, index) => (
+                      <Form.Check
+                        key={`${grupoKey}-${index}`}
+                        type="switch"
+                        id={`${grupoKey}-${permiso.descripcion}`}
+                        label={permiso.descripcion}
+                        defaultChecked={permiso.valor}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+        </Col>
+        {/* <Col md={3}> <button type="submit" className="btn btn-primary w-100">Registrar Rol</button></Col> */}
+
+      </Row>
+      </form>);
+    };
+
+    return (
+      <>
+        <Container fluid>
+          <ModalGenerico SizeVentana="lg" textBoton="Crear Rol" tituloModal="Creacion de Rol" btnCerrar={"Cancelar"} btnOk={"Registrar"} colorClase="info" OnClicOkModal={AceptarModal} OnClicCloseModal={CerrarModal}>
+            {htmlBody()}
+          </ModalGenerico>
+        </Container>
+      </>
+    )
+  }
+  const CerrarModal = () => {
+    alert("Cerrar Modal");
+  }
+  const AceptarModal = () => {
+    alert("Aceptar Modal");
+  }
+
+  console.log(PermisosBase);
+
+  return (
+
+    <>
+      <Navbarapp2 />
+      <TabsMenu defaultActiveKey="tab1" TabsOpciones={[{ eventKey: "tab1", title: "Registro de Usuarios", content: paginaRegistro }, { eventKey: "tab2", title: "Roles", content: paginaroles }]} />
+
     </>
   )
 }
