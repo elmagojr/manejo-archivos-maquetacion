@@ -222,20 +222,25 @@ export function Acceso() {
             <div className="card-body">
               <h4 className="card-title">Permisos Disponibles</h4>
               <div>
-                {Object.entries(PermisosBase).map(([grupoKey, grupoArray]) => (
-                  <div key={grupoKey} className="mb-3">
-                    <h5>{grupoArray[0].subgrupo}</h5>
-                    {grupoArray[0].permisos.map((permiso, index) => (
-                      <Form.Check
-                        key={`${grupoKey}-${index}`}
-                        type="switch"
-                        id={`${grupoKey}-${permiso.descripcion}`}
-                        label={permiso.descripcion}
-                        defaultChecked={permiso.valor}
-                      />
-                    ))}
-                  </div>
-                ))}
+                {
+                  PermisosBase.map((grupoPermisos, index) => {
+                    return (
+                      <div key={index} className="mb-3">
+                        <h5>{grupoPermisos.subgrupo}</h5>
+                        {grupoPermisos.permisos.map((permiso, index) => (
+                          <Form.Check
+                            key={`${grupoPermisos.grupo}-${index}`}
+                            type="switch"
+                            id={`${grupoPermisos.grupo}-${permiso.descripcion}`}
+                            label={permiso.descripcion}
+                            defaultChecked={permiso.valor}
+                          />
+                        ))}
+                      </div>
+                    );
+                  })
+                }
+
               </div>
             </div>
           </div>
