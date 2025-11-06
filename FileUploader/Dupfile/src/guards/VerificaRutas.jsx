@@ -15,6 +15,8 @@ export function GuardRute({ children }) {
   const verificarToken = async (tokenToCheck) => {
     if (!tokenToCheck) return setIsValid(false);
 
+    
+
     try {
       const decoded = jwtDecode(tokenToCheck);
       const now = Date.now() / 1000;
@@ -27,7 +29,9 @@ export function GuardRute({ children }) {
 
       if (!resp.ok) throw new Error("Token inválido en backend");
 
+
       const data = await resp.json();
+      console.log("validacion: ",data);
       if (!data.valido) throw new Error("Token no válido");
 
       setIsValid(true);
@@ -37,14 +41,16 @@ export function GuardRute({ children }) {
       localStorage.removeItem("id_usr");
       localStorage.removeItem("username");
       setIsValid(false);
+          console.log("1");
     }
   };
 
   // Se ejecuta al montar el componente y cada vez que cambia el token
   useEffect(() => {
     verificarToken(token);
+  
   }, [token]);
-
+   console.log("Es valid?: ",isValid );
   // Escucha cambios en localStorage (ej. logout desde otra pestaña)
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -73,23 +79,32 @@ export function GuardRute({ children }) {
         localStorage.removeItem("token");
         localStorage.removeItem("id_usr");
         localStorage.removeItem("username");
+            console.log("2");
         return;
       }
+console.log("RESTANTE", tiempoRestante);
 
-      const timer = setTimeout(() => {
+if (tiempoRestante>0) {
+     const timer = setTimeout(() => {
         localStorage.removeItem("token");
         localStorage.removeItem("id_usr");
         localStorage.removeItem("username");
         setIsValid(false);
+            console.log("3");
       }, tiempoRestante);
+            return () => clearTimeout(timer); // limpiar al desmontar o cambiar token
+}
+   
 
-      return () => clearTimeout(timer); // limpiar al desmontar o cambiar token
+
     } catch (error) {
       console.error("Error decodificando token para temporizador", error);
       setIsValid(false);
+          console.log("4");
     }
   }, [token]);
-
+ 
+  
   if (isValid === null) {
     // Mientras valida
     return <div>Cargando...</div>;

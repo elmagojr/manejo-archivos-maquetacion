@@ -31,8 +31,7 @@ export function Login() {
             if (data.estado === 0) {
                 setVerMensaje(false) //muestra elmensaje
                 setMensaje(data.message)
-            }
-            else {
+            } else {
                 localStorage.setItem("token", data.token)
                 localStorage.setItem("id_usr", data.id_usr)
                 localStorage.setItem("username", data.user)

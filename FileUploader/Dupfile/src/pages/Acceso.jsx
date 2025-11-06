@@ -22,6 +22,12 @@ export function Acceso() {
   const [dataUsrs, setDatasur] = useState([]);
   const token = localStorage.getItem("token"); //token del adminstrador o persona autorizada
 
+  // varaibles para roles
+    const [showModal, setShowModal] = useState(false);
+    const [desRol, setDesRol] = useState("");
+    const [nombreRol, setNombreRol] = useState("");
+    const [permisosSeleccionados, setPermisosSeleccionados] = useState(PermisosBase);
+
   const api = import.meta.env.VITE_MODE == "dev" ? import.meta.env.VITE_API_URL_DEV : import.meta.env.VITE_API_URL_PROD
   function BuscarUsuario(id) {
     const codigo = dataUsrs.find(item => item.idKey === Number(id))
@@ -61,7 +67,75 @@ export function Acceso() {
     document.getElementById("rpassword2").value = "";
   }
 
+const RegistroRol = async (formulario) => {
+  //console.log("foirmualro", formulario);
+  
+    setLoading(true);
+    try {
 
+      // validaciones
+      if (formulario.nombreRol === "") {
+        alert("Debe ingresar un nombre para el rol.");
+        //Alerta("warning", "Debe ingresar un nombre para el rol.", true);   
+        setLoading(false);
+        return;
+      }
+
+      if (formulario.descripcionRol === "") {
+        Alerta("warning", "Debe ingresar una descripción para el rol.", true);
+        setLoading(false);
+        return;
+      }
+
+
+
+
+
+      //return;
+      const payload = {
+        nombreRol: formulario.nombreRol,
+        desRol: formulario.desRol,        
+        permisos: formulario.permisos
+      }
+      //console.log("rol", payload);
+/*
+      if (token) {
+        const decoded = jwtDecode(token);
+        const permisos = decoded.permisos;
+        if (!permisos.crear_usuario) {
+          Alerta("info", "Usted no tiene permiso para esta accion", true)
+          return;
+        }
+        
+      }
+*/
+
+      const res = await fetch(`${api}api/auth/registrar_rol`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "authorization": `Bearer ${token}` },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      console.log("esto es una preuba", data);
+      if (data.estado === 1) {
+        alert("Rol " + data.nombre_rol + " creado Exitosamente");
+        setDesRol("");
+        setNombreRol("");
+        setPermisosSeleccionados(PermisosBase);
+        //Alerta("", "", false)
+        //ResetFormulario();
+      }
+
+      if (!res.ok) throw new Error(data.message || "Error de registro");
+
+    } catch (error) {
+      alert("No se pudo crear el rol: " + error.message);
+      //Alerta("warning", "No se pudo crear el rol: " + error.message, true);
+    } finally {
+      setLoading(false);
+    }
+
+  }
   const RegistroUsr = async () => {
     setLoading(true);
     try {
@@ -190,9 +264,23 @@ export function Acceso() {
   }
 
   const paginaroles = () => {
-    const [showModal, setShowModal] = useState(false);
-    const [nombreRol, setNombreRol] = useState("");
-    const [permisosSeleccionados, setPermisosSeleccionados] = useState(PermisosBase);
+    const handleChecks  = (indexGrupo, indexPermiso) => {
+      const nuevosPermisos = [...permisosSeleccionados];
+      nuevosPermisos[indexGrupo].permisos[indexPermiso].valor = !nuevosPermisos[indexGrupo].permisos[indexPermiso].valor;
+      setPermisosSeleccionados(nuevosPermisos);
+    }
+    const ValidaCampos = () => {
+      if (nombreRol.trim() === "") {
+        alert("Debe ingresar un nombre para el rol.");
+        return false;
+      } 
+      if (desRol.trim() === "") {
+        alert("Debe ingresar una descripción para el rol.");
+        return false;
+      }
+      return true;
+    };
+
     const htmlBody = () => {
       return (
       <form> 
@@ -204,13 +292,24 @@ export function Acceso() {
                 <div className="">
                   <label htmlFor="nombreRol" className="form-label">Nombre del Rol</label>
                   <input
-                    onChange={(e) => setNombreRol(e.target.value)}
+                    onChange={(e) => {setNombreRol(e.target.value); }}
                     type="text"
                     value={nombreRol}
                     id="nombreRol"
                     className="form-control"
                     placeholder="Ingresa el nombre del rol"
                     required
+                  />
+                  <label htmlFor="desRol" className="form-label">Descripción del Rol</label>
+                  <textarea
+                    onChange={(e) => {setDesRol(e.target.value);}}
+                    type="textarea"
+                    value={desRol}
+                    id="desRol"
+                    className="form-control"
+                    placeholder="Ingresa la descripción del rol"
+                    required
+                  
                   />
                 </div>
               
@@ -226,14 +325,15 @@ export function Acceso() {
                   PermisosBase.map((grupoPermisos, index) => {
                     return (
                       <div key={index} className="mb-3">
-                        <h5>{grupoPermisos.subgrupo}</h5>
-                        {grupoPermisos.permisos.map((permiso, index) => (
+                        <h5>{grupoPermisos.des_grupo}</h5>
+                        {grupoPermisos.permisos.map((permiso, Pindex) => (
                           <Form.Check
-                            key={`${grupoPermisos.grupo}-${index}`}
+                            key={`${grupoPermisos.grupo}-${Pindex}`}
                             type="switch"
                             id={`${grupoPermisos.grupo}-${permiso.descripcion}`}
                             label={permiso.descripcion}
                             defaultChecked={permiso.valor}
+                            onChange={()=>handleChecks(index, Pindex)}
                           />
                         ))}
                       </div>
@@ -263,13 +363,15 @@ export function Acceso() {
     )
   }
   const CerrarModal = () => {
-    alert("Cerrar Modal");
+        setDesRol("");
+        setNombreRol("");
+        setPermisosSeleccionados(PermisosBase);
   }
   const AceptarModal = () => {
-    alert("Aceptar Modal");
+    RegistroRol({nombreRol, desRol, permisos: JSON.stringify(permisosSeleccionados)});
   }
 
-  console.log(PermisosBase);
+  //console.log(PermisosBase);
 
   return (
 

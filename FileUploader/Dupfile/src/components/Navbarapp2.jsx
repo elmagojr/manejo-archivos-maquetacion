@@ -77,7 +77,7 @@ export function Navbarapp2(params) {
                   
                   {/* <Link to='/login' className="btn btn-primary mt-2">Cerrar Sesión</Link>    */}
                   <BotonCerrar></BotonCerrar>
-                  <Link to='/register' className="btn btn-primary mt-2">Registrar</Link>       
+                   
                 </Offcanvas.Body>
 
               </Navbar.Offcanvas>

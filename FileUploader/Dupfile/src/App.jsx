@@ -1,7 +1,7 @@
 import './App.css'
 import { Login } from './pages/Login';
 import { Link, BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Principal } from './pages/principal';
+import { Principal } from './pages/Principal';
 import { Acceso } from './pages/Acceso';
 import { GuardRute } from './guards/VerificaRutas';
 
@@ -18,6 +18,7 @@ function App() {
         }></Route>
 
         <Route path='/principal' element={
+
           <GuardRute>
             <Principal></Principal>
           </GuardRute>

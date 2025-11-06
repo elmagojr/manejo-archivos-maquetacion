@@ -10,33 +10,38 @@ export const Tipos_Documentos = [
 export const PermisosBase = [
   {
     grupo: "G_ROLES",
-    subgrupo: "Gestión de Roles",
+    des_grupo: "Gestión de Roles",
     permisos: [
-      { valor: false, descripcion: "crear_rol" },
-      { valor: false, descripcion: "modificar_rol" },
-      { valor: false, descripcion: "eliminar_rol" },
-      { valor: false, descripcion: "ver_roles" },
+      { identificador:"crear_rol", valor: false, descripcion: "Crear Roles" },
+      { identificador:"modificar_rol", valor: false, descripcion: "Modificar Roles" },
+      { identificador:"eliminar_rol", valor: false, descripcion: "Eliminar Roles" },
+      { identificador:"ver_roles", valor: false, descripcion: "Ver Roles" },
     ],
   },
   {
     grupo: "G_USERS",
-    subgrupo: "Gestión de Usuarios",
+    des_grupo: "Gestión de Usuarios",
     permisos: [
-      { valor: false, descripcion: "crear_usuario" },
-      { valor: false, descripcion: "modificar_usuario" },
-      { valor: false, descripcion: "eliminar_usuario" },
-      { valor: false, descripcion: "ver_usuarios" },
+      { identificador:"crear_usuario", valor: false, descripcion: "Crear Usuarios" },
+      { identificador:"modificar_usuario", valor: false, descripcion: "Modificar Usuarios" },
+      { identificador:"eliminar_usuario", valor: false, descripcion: "Eliminar Usuarios" },
+      { identificador:"ver_usuarios", valor: false, descripcion: "Ver Usuarios" },
     ],
   },
   {
     grupo: "G_ARCHIVOS",
-    subgrupo: "Gestión de Archivos",
+    des_grupo: "Gestión de Archivos",
     permisos: [
-      { valor: false, descripcion: "crear_archivo" },
-      { valor: false, descripcion: "eliminar_archivo" },
-      { valor: false, descripcion: "ver_archivo" },
+      { identificador:"crear_archivo", valor: false, descripcion: "Crear Archivos" },
+      { identificador:"eliminar_archivo", valor: false, descripcion: "Eliminar Archivos" },
+      { identificador:"ver_archivo", valor: false, descripcion: "Ver Archivos" },
+      
     ],
   },
 ];
+
+
+
+
 
 //export default { Tipos_Documentos, Permisos };
