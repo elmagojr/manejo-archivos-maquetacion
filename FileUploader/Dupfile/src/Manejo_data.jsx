@@ -31,12 +31,15 @@ export function Manejo_data(api) {
 
  
 
-export async function ApiGet(url) {
-  const respuesta = await fetch(url);
+export async function ApiGet(url, encabezados = {}) {
+
+  
+  const respuesta = await fetch(url, { method: "GET", headers: encabezados });
+
   if (!respuesta.ok) {
     throw new Error(`Error HTTP: ${respuesta.status}`);
   }
   return await respuesta.json();
 }
-
+ 
 

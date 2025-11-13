@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {Button, Modal} from "react-bootstrap";
  
-export function ModalGenerico({SizeVentana,textBoton,tituloModal,btnCerrar,btnOk,colorClase, children,OnClicOkModal,OnClicCloseModal }) {
+export function ModalGenerico({SizeVentana,textBoton,tituloModal,btnMostrarOk,btnCerrar,btnOk,colorClase, children,OnClicOkModal,OnClicCloseModal }) {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -22,9 +22,11 @@ export function ModalGenerico({SizeVentana,textBoton,tituloModal,btnCerrar,btnOk
                     <Button variant="secondary" onClick={() => { OnClicCloseModal(); handleClose(); }}>
                         {btnCerrar || "Cerrar"}
                     </Button>
+                    {btnMostrarOk !== false && (
                     <Button variant="primary" onClick={() => { OnClicOkModal(); handleClose(); }}>
                         {btnOk || "Aceptar"}
                     </Button>
+                    )}
                 </Modal.Footer>
             </Modal>
 
