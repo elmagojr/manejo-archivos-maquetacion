@@ -8,6 +8,8 @@ import { TabsMenu } from "../components/TabsMenu.jsx";
 import { PermisosBase } from "../assets/cositas.jsx";
 import { Container, Row, Col, Form, Table } from "react-bootstrap";
 import { ModalGenerico } from "../components/ModalGenerico.jsx";
+import { Button } from "react-bootstrap";
+
 
 export function Acceso() {
 
@@ -23,6 +25,8 @@ export function Acceso() {
   const token = localStorage.getItem("token"); //token del adminstrador o persona autorizada
   const [listadoDeRoles, setListadoDeRoles] = useState([]);
   const [Permisos_x_rol, setPermisos_x_rol] = useState([]);
+  const [accion, setAccion] = useState(1);
+  const [IdRol, setIdRol] = useState(0);
 
   // varaibles para roles
   const [showModal, setShowModal] = useState(false);
@@ -36,6 +40,20 @@ export function Acceso() {
     return codigo ? codigo.codigoUsr.toString() : null
   }
 
+  const LoadListadoRoles = () => {
+    ApiGet(api + "api/auth/listado_roles", { "Content-Type": "application/json", "authorization": `Bearer ${token}` }).then((jsonDAta) => {
+      const newData = [];
+      jsonDAta.map((item, index) => {
+        const permisosObj = item.ROL_PERMISOS;
+        setPermisos_x_rol(JSON.stringify(item.ROL_PERMISOS));
+        newData.push({ idKey: index + 1, ROL_ID: item.ROL_ID, ROL_NOMBRE: item.ROL_NOMBRE, ROL_PERMISOS: permisosObj, ROL_DESCRIPCION: item.ROL_DESCRIPCION })
+      });
+      console.log(" Lo que devuelve la API de roles:", newData);
+      setListadoDeRoles(newData);
+    }).catch(err => {
+      alert("No se pudo traer los datos requeridos [roles]", err); console.log(err);
+    });
+  }
   useEffect(() => { //esto evita que se repita el ciclo hasta que devuelva []
     ApiGet(api + "api/usrActivos").then((jsonDAta) => {
       const newData = [];
@@ -48,25 +66,9 @@ export function Acceso() {
 
     }).catch(err => {
       alert("No se pudo traer los datos requeridos [usuarios]", err); console.log(err);
-      //console.log("Error en la promesa:", err);
     });
 
-    ApiGet(api + "api/auth/listado_roles", { "Content-Type": "application/json", "authorization": `Bearer ${token}` }).then((jsonDAta) => {
-      const newData = [];
-      jsonDAta.map((item, index) => {
-        const permisosObj = item.ROL_PERMISOS;
-        setPermisos_x_rol(JSON.stringify(item.ROL_PERMISOS));
-        //console.log(JSON.parse(item.ROL_PERMISOS));
-        console.log("pruebas ",JSON.parse(item.ROL_PERMISOS));
-        
-
-        newData.push({ idKey: index + 1, ROL_ID: item.ROL_ID, ROL_NOMBRE: item.ROL_NOMBRE, ROL_PERMISOS: permisosObj, ROL_DESCRIPCION: item.ROL_DESCRIPCION })
-      });
-      console.log(" Lo que devuelve la API de roles:", newData);
-      setListadoDeRoles(newData);
-    }).catch(err => {
-      alert("No se pudo traer los datos requeridos [roles]", err); console.log(err);
-    });
+    LoadListadoRoles();
 
 
   }, [])
@@ -83,7 +85,7 @@ export function Acceso() {
     document.getElementById("rpassword2").value = "";
   }
 
-  const RegistroRol = async (formulario) => {
+  const RegistroRol = async (formulario, accion) => {
     //console.log("foirmualro", formulario);
 
     setLoading(true);
@@ -103,31 +105,39 @@ export function Acceso() {
         return;
       }
 
-
-
-
-
       //return;
-      const payload = {
-        nombreRol: formulario.nombreRol,
-        desRol: formulario.desRol,
-        permisos: JSON.stringify(formulario.permisos)
+      let payload = {};
+      let endpoint = `${api}api/auth/registrar_rol`;
+      if (accion === 1) {
+        payload = {
+          nombreRol: formulario.nombreRol,
+          desRol: formulario.desRol,
+          permisos: JSON.stringify(formulario.permisos)
+        }
+      }
+      if (accion === 2) {
+        payload = {
+          id_delRol: formulario.idRol,
+          nombreRol: formulario.nombreRol,
+          desRol: formulario.desRol,
+          permisos: JSON.stringify(formulario.permisos)
+        }
+        endpoint = `${api}api/auth/actualizar_rol`;
       }
 
-      const res = await fetch(`${api}api/auth/registrar_rol`, {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json", "authorization": `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      console.log("esto es una preuba", data);
+      //console.log("esto es una preuba", data);
       if (data.estado === 1) {
         alert("Rol " + data.nombre_rol + " creado Exitosamente");
         setDesRol("");
         setNombreRol("");
         setPermisosSeleccionados(PermisosBase);
-        //Alerta("", "", false)
-        //ResetFormulario();
+        LoadListadoRoles();
       }
 
       if (!res.ok) throw new Error(data.message || "Error de registro");
@@ -270,10 +280,6 @@ export function Acceso() {
   const paginaroles = () => {
 
 
-    //console.log("eLISTADO DE ROLES", data);
-    //if (data.ok) {    alert("USI HAT ROLES");      Alerta("", "", false)}
-
-
     const handleChecks = (indexGrupo, indexPermiso) => {
       const nuevosPermisos = [...permisosSeleccionados];
       nuevosPermisos[indexGrupo].permisos[indexPermiso].valor = !nuevosPermisos[indexGrupo].permisos[indexPermiso].valor;
@@ -291,7 +297,59 @@ export function Acceso() {
       return true;
     };
 
+    const AceptarModal = () => {
+      //alert("Accion a realizar: " + accion);
+      //return;
+      if (ValidaCampos()) {
+        RegistroRol({ nombreRol, desRol, permisos: permisosSeleccionados }, accion);
+      }
+    };
+    const SeleccionarRol = async (accion, idRol) => {
+      if (accion == 1) {
+
+
+      } else if (accion == 2) {
+
+        const confirmar = confirm(`¿Está seguro que desea eliminar el rol?. Esto eliminará todos los permisos asociados a los usurios con este rol.`);
+        if (!confirmar) {
+          return;
+        }
+
+        try {
+          const ur_del = `${api}api/auth/eliminar_rol`;
+          //console.log(ur_del);
+
+          const respuesta = await fetch(ur_del, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", "authorization": `Bearer ${token}` },
+            body: JSON.stringify({ id_delRol: idRol })
+          });
+          const resultado = await respuesta.json();
+          if (resultado.estado == 1) {
+            alert(resultado.message);
+          } else {
+            alert(resultado.message);
+          }
+          setListadoDeRoles(prevRoles =>
+            prevRoles.filter(rol => rol.ROL_ID !== idRol)
+          );
+        } catch (error) {
+          alert(error.message);
+        }
+      }
+      //console.log("Rol seleccionado:", listadoDeRoles);
+    };
+    //PRUEBA DE FORMULARIO
+    const OcClikUpdate = () => {
+      return (
+        <>
+
+        </>
+
+      )
+    }
     const htmlBody = () => {
+
       return (
         <form>
           <Row className="justify-content-center  vh-100 bg-light ">
@@ -362,6 +420,81 @@ export function Acceso() {
         </form>);
     };
 
+    const htmlBodyUpdate = (dataRol, permisosRol) => {
+    
+      //console.log("PERMISOS:", permisosRol);
+      return (
+        <form>
+          <Row className="justify-content-center  vh-100 bg-light ">
+            <Col md={6}>
+              <div className="card text-start">
+                <div className="card-body">
+                  <h4 className="card-title">Registro de roles</h4>
+                  <div className="">
+                    <label htmlFor="nombreRol" className="form-label">Nombre del Rol</label>
+                    <input
+                      onChange={(e) => { setNombreRol(e.target.value); }}
+                      type="text"
+                      value={nombreRol}           
+                      //defaultValue={dataRol ? dataRol.nombreRol : ""}
+                      id="nombreRolU"
+                      className="form-control"
+                      placeholder="Ingresa el nombre del rol"
+                      required
+                    />
+                    <label htmlFor="desRolU" className="form-label">Descripción del Rol</label>
+                    <textarea
+                      onChange={(e) => { setDesRol(e.target.value); }}
+                      type="textarea"
+                      value={desRol}
+                      //defaultValue={dataRol  ? dataRol.desRol : ""}
+                      id="desRolU"
+                      className="form-control"
+                      placeholder="Ingresa la descripción del rol"
+                      required
+
+                    />
+                  </div>
+
+                </div>
+              </div>
+            </Col>
+            <Col md={6}>
+              <div className="card text-start">
+                <div className="card-body">
+                  <h4 className="card-title">Permisos Disponibles</h4>
+                  <div>
+                    {
+                      permisosSeleccionados.map((grupoPermisos, index) => {
+                        return (
+                          <div key={index} className="mb-3">
+                            <h5>{grupoPermisos.des_grupo}</h5>
+                            {grupoPermisos.permisos.map((permiso, Pindex) => (
+                              <Form.Check
+                                key={`${grupoPermisos.grupo}-${Pindex}`}
+                                type="switch"
+                                id={`${grupoPermisos.grupo}-${permiso.descripcion}`}
+                                label={permiso.descripcion}
+                                checked={permiso.valor}
+                                onChange={() => handleChecks(index, Pindex)}
+                              />
+                            ))}
+                          </div>
+                        );
+                      })
+                    }
+
+                  </div>
+                </div>
+              </div>
+
+            </Col>
+            {/* <Col md={3}> <button type="submit" className="btn btn-primary w-100">Registrar Rol</button></Col> */}
+
+          </Row>
+        </form>);
+    };
+
     return (
       <>
         <Container fluid>
@@ -380,7 +513,7 @@ export function Acceso() {
                   <td>{rol.ROL_NOMBRE}</td>
                   <td>{rol.ROL_DESCRIPCION}</td>
                   <td>
-                    <ModalGenerico SizeVentana="md" textBoton="Ver Permisos" tituloModal="Permisos" btnMostrarOk={false} btnCerrar={"Cerrar"} btnOk={"ok"} colorClase="info" OnClicOkModal={CerrarModal} OnClicCloseModal={CerrarModal}>
+                    <ModalGenerico UnaAccion={() => setAccion(3)} icono={"ri-eye-line"} SizeVentana="md" textBoton="Ver Permisos" tituloModal="Permisos" btnMostrarOk={false} btnCerrar={"Cerrar"} btnOk={"ok"} colorClase="info" OnClicOkModal={CerrarModal} OnClicCloseModal={CerrarModal}>
                       <Row className="justify-content-center  vh-100 bg-light " >
                         <Col md={12}>
                           <div className="card text-start">
@@ -419,22 +552,22 @@ export function Acceso() {
                   </td>
 
                   <td>
-                  
-                      <a className="btn btn-warning" >Editar</a>
-                      <a className="btn btn-danger" >Eliminar</a>
+                    {/* <Button onClick={() => SeleccionarRol(1, rol.ROL_ID)} className="btn btn-warning me-2" ><span className="ri-pencil-line"></span></Button> */}
+                    <ModalGenerico UnaAccion={() => {ResetFormulario(); setAccion(1); setNombreRol(rol.ROL_NOMBRE); setDesRol(rol.ROL_DESCRIPCION);setIdRol(rol.ROL_ID); setPermisosSeleccionados(JSON.parse(rol.ROL_PERMISOS));}} icono={"ri-pencil-line"} SizeVentana="lg" textBoton="" tituloModal="Permisos" btnMostrarOk={true} btnCerrar={"Cerrar"} btnOk={"Guardar"} colorClase="warning" OnClicOkModal={AceptarModal} OnClicCloseModal={CerrarModal}>
 
-                  
-                  
-                     
-                    {/* Aquí puedes agregar botones o enlaces para acciones como editar o eliminar */}
+                      {htmlBodyUpdate({ id_delRol: rol.ROL_ID, nombreRol: rol.ROL_NOMBRE, desRol: rol.ROL_DESCRIPCION }, JSON.parse(rol.ROL_PERMISOS))}
+                    </ModalGenerico>
+                    <Button onClick={() => SeleccionarRol(2, rol.ROL_ID)} className="btn btn-danger" > <span className="ri-delete-bin-line"></span></Button>
+
                   </td>
                 </tr>
               ))}
             </tbody>
 
           </Table>
-          <ModalGenerico SizeVentana="lg" textBoton="Crear Rol" tituloModal="Creacion de Rol" btnCerrar={"Cancelar"} btnOk={"Registrar"} colorClase="info" OnClicOkModal={AceptarModal} OnClicCloseModal={CerrarModal}>
-            {htmlBody()}
+          <ModalGenerico UnaAccion={() => {ResetFormulario(); setAccion(1);}} SizeVentana="lg" textBoton="Crear Rol" tituloModal="Creacion de Rol" btnCerrar={"Cancelar"} btnOk={"Registrar"} colorClase="info" OnClicOkModal={AceptarModal} OnClicCloseModal={CerrarModal}>
+
+            {htmlBodyUpdate()}
           </ModalGenerico>
         </Container>
       </>
@@ -445,9 +578,7 @@ export function Acceso() {
     setNombreRol("");
     setPermisosSeleccionados(PermisosBase);
   }
-  const AceptarModal = () => {
-    RegistroRol({ nombreRol, desRol, permisos: permisosSeleccionados });
-  }
+
 
   //console.log(PermisosBase);
 

@@ -55,10 +55,10 @@ export function Principal() {
 
 
 
-    console.log("Logitud de datos: ", data.length);
+    //console.log("Logitud de datos: ", data.length);
 
-    console.log("dni " + identidadAfiliado);
-    console.log("nombre " + nombreAfiliado);
+    //console.log("dni " + identidadAfiliado);
+    //console.log("nombre " + nombreAfiliado);
 
     if (data.length > 0) {
 
@@ -105,7 +105,7 @@ export function Principal() {
       ApiGet(urlAcordion).then((json) => {
         setDataAcordion(json);
       }).catch(err => console.log(err));
-      console.log("Data acordion: ", dataAcordion, "url " + urlAcordion);
+      //console.log("Data acordion: ", dataAcordion, "url " + urlAcordion);
 
 
     }

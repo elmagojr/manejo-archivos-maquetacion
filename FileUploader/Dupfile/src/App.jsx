@@ -1,9 +1,11 @@
 import './App.css'
+import './assets/fonts/remixicon.css'
 import { Login } from './pages/Login';
 import { Link, BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Principal } from './pages/Principal';
 import { Acceso } from './pages/Acceso';
 import { GuardRute } from './guards/VerificaRutas';
+ 
 
 
 function App() {

@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import {Button, Modal} from "react-bootstrap";
  
-export function ModalGenerico({SizeVentana,textBoton,tituloModal,btnMostrarOk,btnCerrar,btnOk,colorClase, children,OnClicOkModal,OnClicCloseModal }) {
+export function ModalGenerico({UnaAccion, icono, SizeVentana,textBoton,tituloModal,btnMostrarOk,btnCerrar,btnOk,colorClase, children,OnClicOkModal,OnClicCloseModal }) {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     return (
         <> 
-            <Button variant={colorClase || "primary"} onClick={handleShow}>
-                {textBoton }
+            <Button  variant={colorClase || "primary"} onClick={() => { handleShow(); UnaAccion(); }}>
+                 { <span className={icono}></span>} {textBoton }
             </Button>
-
+           
             <Modal show={show} onHide={() => { OnClicCloseModal(); handleClose();}} centered backdrop="static" keyboard={false} size={SizeVentana || "xl"} scrollable>
                 <Modal.Header closeButton>
                     <Modal.Title>{tituloModal || "Modal heading"}</Modal.Title>
@@ -19,11 +19,11 @@ export function ModalGenerico({SizeVentana,textBoton,tituloModal,btnMostrarOk,bt
                     {children}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => { OnClicCloseModal(); handleClose(); }}>
+                    <Button variant="secondary" onClick={() => { OnClicCloseModal(); handleClose();  }}>
                         {btnCerrar || "Cerrar"}
                     </Button>
                     {btnMostrarOk !== false && (
-                    <Button variant="primary" onClick={() => { OnClicOkModal(); handleClose(); }}>
+                    <Button variant="primary" onClick={() => { OnClicOkModal(); handleClose();  }}>
                         {btnOk || "Aceptar"}
                     </Button>
                     )}
