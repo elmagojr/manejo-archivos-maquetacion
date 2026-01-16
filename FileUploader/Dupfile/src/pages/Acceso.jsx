@@ -112,18 +112,20 @@ export function Acceso() {
         payload = {
           nombreRol: formulario.nombreRol,
           desRol: formulario.desRol,
-          permisos: JSON.stringify(formulario.permisos)
+          permisos: formulario.permisos
         }
       }
       if (accion === 2) {
         payload = {
-          id_delRol: formulario.idRol,
-          nombreRol: formulario.nombreRol,
+          id_delRol: formulario.IdRol,
           desRol: formulario.desRol,
-          permisos: JSON.stringify(formulario.permisos)
+          nombreRol: formulario.nombreRol,         
+          permisos: formulario.permisos
         }
-        endpoint = `${api}api/auth/actualizar_rol`;
+        endpoint = `${api}api/auth/editar_rol`;
       }
+      //console.log(accion, payload);
+    
 
       const res = await fetch(endpoint, {
         method: "POST",
@@ -301,7 +303,9 @@ export function Acceso() {
       //alert("Accion a realizar: " + accion);
       //return;
       if (ValidaCampos()) {
-        RegistroRol({ nombreRol, desRol, permisos: permisosSeleccionados }, accion);
+        //console.log({ nombreRol, desRol, permisos: permisosSeleccionados },accion);
+        
+        RegistroRol({ IdRol, nombreRol, desRol, permisos: permisosSeleccionados }, accion);
       }
     };
     const SeleccionarRol = async (accion, idRol) => {
@@ -513,7 +517,7 @@ export function Acceso() {
                   <td>{rol.ROL_NOMBRE}</td>
                   <td>{rol.ROL_DESCRIPCION}</td>
                   <td>
-                    <ModalGenerico UnaAccion={() => setAccion(3)} icono={"ri-eye-line"} SizeVentana="md" textBoton="Ver Permisos" tituloModal="Permisos" btnMostrarOk={false} btnCerrar={"Cerrar"} btnOk={"ok"} colorClase="info" OnClicOkModal={CerrarModal} OnClicCloseModal={CerrarModal}>
+                    <ModalGenerico UnaAccion={() => setAccion(3)} icono={"ri-eye-line"} SizeVentana="md" textBoton="" tituloModal="Permisos" btnMostrarOk={false} btnCerrar={"Cerrar"} btnOk={"ok"} colorClase="info" OnClicOkModal={CerrarModal} OnClicCloseModal={CerrarModal}>
                       <Row className="justify-content-center  vh-100 bg-light " >
                         <Col md={12}>
                           <div className="card text-start">
@@ -553,9 +557,9 @@ export function Acceso() {
 
                   <td>
                     {/* <Button onClick={() => SeleccionarRol(1, rol.ROL_ID)} className="btn btn-warning me-2" ><span className="ri-pencil-line"></span></Button> */}
-                    <ModalGenerico UnaAccion={() => {ResetFormulario(); setAccion(1); setNombreRol(rol.ROL_NOMBRE); setDesRol(rol.ROL_DESCRIPCION);setIdRol(rol.ROL_ID); setPermisosSeleccionados(JSON.parse(rol.ROL_PERMISOS));}} icono={"ri-pencil-line"} SizeVentana="lg" textBoton="" tituloModal="Permisos" btnMostrarOk={true} btnCerrar={"Cerrar"} btnOk={"Guardar"} colorClase="warning" OnClicOkModal={AceptarModal} OnClicCloseModal={CerrarModal}>
+                    <ModalGenerico UnaAccion={() => {ResetFormulario(); setAccion(2); setNombreRol(rol.ROL_NOMBRE); setDesRol(rol.ROL_DESCRIPCION);setIdRol(rol.ROL_ID); setPermisosSeleccionados(JSON.parse(rol.ROL_PERMISOS));}} icono={"ri-pencil-line"} SizeVentana="lg" textBoton="" tituloModal="Permisos - Editar Rol" btnMostrarOk={true} btnCerrar={"Cerrar"} btnOk={"Guardar"} colorClase="warning" OnClicOkModal={AceptarModal} OnClicCloseModal={CerrarModal}>
 
-                      {htmlBodyUpdate({ id_delRol: rol.ROL_ID, nombreRol: rol.ROL_NOMBRE, desRol: rol.ROL_DESCRIPCION }, JSON.parse(rol.ROL_PERMISOS))}
+                    {htmlBodyUpdate({ id_delRol: rol.ROL_ID, nombreRol: rol.ROL_NOMBRE, desRol: rol.ROL_DESCRIPCION }, JSON.parse(rol.ROL_PERMISOS))}
                     </ModalGenerico>
                     <Button onClick={() => SeleccionarRol(2, rol.ROL_ID)} className="btn btn-danger" > <span className="ri-delete-bin-line"></span></Button>
 

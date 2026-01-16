@@ -46,10 +46,10 @@ export function TabladataArchivos({ listadoArchivos, onSelect, url, identidad, t
                             <td>{archivo.size}</td>
                             <td>{new Date(archivo.fecha).toLocaleString()} </td>
                             <td>
-                                <button className="btn btn-primary btn-sm" onClick={() => { window.open(`${url}pdf/${identidad}/${tipo}/${archivo.nombre}`, "_blank") }}  >Ver
+                                <button className="btn btn-primary btn-sm" onClick={() => { window.open(`${url}pdf/${identidad}/${tipo}/${archivo.nombre}`, "_blank") }}  >
                                     <i className="ri-eye-fill"></i>
                                 </button>
-                                <button className="btn btn-danger btn-sm" onClick={() => { EliminarArchivo(identidad, tipo, archivo.nombre); }} >Del
+                                <button className="btn btn-danger btn-sm" onClick={() => { EliminarArchivo(identidad, tipo, archivo.nombre); }} >
                                     <i className="ri-delete-bin-line"></i>
                                 </button>
                             </td>
